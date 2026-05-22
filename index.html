@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="To-Do List Life Dashboard — kelola tugas harianmu dengan mudah" />
+    <title>Life Dashboard</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+
+    <!-- ===== HEADER: Greeting & Clock ===== -->
+    <header class="site-header" role="banner">
+      <div class="header-inner">
+
+        <!-- Pesan greeting berdasarkan waktu (diisi oleh JS) -->
+        <p class="greeting" id="greeting" aria-live="polite">Selamat datang</p>
+
+        <!-- Jam digital (diperbarui setiap detik oleh JS) -->
+        <time class="clock" id="clock" datetime="" aria-label="Jam saat ini">
+          00:00:00
+        </time>
+
+        <!-- Tanggal hari ini (diisi oleh JS) -->
+        <p class="date-display" id="date-display" aria-label="Tanggal hari ini"></p>
+
+        <!-- Custom Name Input -->
+        <div class="name-input-wrapper">
+          <label for="user-name-input" class="visually-hidden">Nama kamu</label>
+          <input
+            type="text"
+            id="user-name-input"
+            class="name-input"
+            placeholder="Masukkan namamu..."
+            maxlength="40"
+            aria-label="Masukkan nama untuk personalisasi greeting"
+          />
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main id="main-content">
+
+      <!-- Focus Timer & Quick Links -->
+      <div class="widgets-row">
+
+        <!-- Focus Timer (Pomodoro 25 menit) -->
+        <section class="widget-card timer-section" aria-labelledby="timer-heading">
+          <h2 id="timer-heading" class="section-title">⏱️ Focus Timer</h2>
+          <div class="timer-display" id="timer-display" aria-live="polite" aria-label="Waktu tersisa">25:00</div>
+          <div class="timer-controls">
+            <button type="button" id="btn-timer-start" class="btn btn--primary" aria-label="Mulai timer">▶ Mulai</button>
+            <button type="button" id="btn-timer-pause" class="btn btn--ghost" aria-label="Jeda timer" hidden>⏸ Jeda</button>
+            <button type="button" id="btn-timer-reset" class="btn btn--ghost" aria-label="Reset timer">↺ Reset</button>
+          </div>
+          <p class="timer-status" id="timer-status" aria-live="polite"></p>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="widget-card links-section" aria-labelledby="links-heading">
+          <h2 id="links-heading" class="section-title">🔗 Quick Links</h2>
+          <ul class="links-list" id="links-list" role="list" aria-label="Daftar quick link"></ul>
+          <form class="links-form" id="links-form" novalidate aria-label="Tambah quick link baru">
+            <input
+              type="text"
+              id="link-label-input"
+              class="form-input links-input"
+              placeholder="Label (contoh: GitHub)"
+              maxlength="30"
+              aria-label="Label link"
+            />
+            <input
+              type="url"
+              id="link-url-input"
+              class="form-input links-input"
+              placeholder="URL (https://...)"
+              aria-label="URL link"
+              aria-describedby="link-url-error"
+            />
+            <span class="form-error" id="link-url-error" role="alert" aria-live="assertive"></span>
+            <button type="submit" class="btn btn--primary" aria-label="Tambah link">+ Tambah</button>
+          </form>
+        </section>
+
+      </div>
+
+      <!-- Progress Tracker (Requirement 5) -->
+      <section class="progress-section" aria-labelledby="progress-heading">
+        <h2 id="progress-heading" class="section-title">Progres Hari Ini</h2>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-number" id="stat-total">0</span>
+            <span class="stat-label">Total Task</span>
+          </div>
+          <div class="stat-card stat-card--completed">
+            <span class="stat-number" id="stat-completed">0</span>
+            <span class="stat-label">Selesai</span>
+          </div>
+          <div class="stat-card stat-card--inprogress">
+            <span class="stat-number" id="stat-inprogress">0</span>
+            <span class="stat-label">Dikerjakan</span>
+          </div>
+          <div class="stat-card stat-card--pending">
+            <span class="stat-number" id="stat-pending">0</span>
+            <span class="stat-label">Menunggu</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-wrapper" role="progressbar"
+             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+             aria-label="Persentase penyelesaian task"
+             id="progress-bar-wrapper">
+          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+        <p class="progress-percent" id="progress-percent">0% selesai</p>
+      </section>
+
+      <!-- Filter & Search (Requirement 4) -->
+      <section class="filter-section" aria-labelledby="filter-heading">
+        <h2 id="filter-heading" class="visually-hidden">Filter dan Pencarian Task</h2>
+
+        <div class="filter-bar">
+          <!-- Pencarian -->
+          <div class="search-wrapper">
+            <label for="search-input" class="visually-hidden">Cari task</label>
+            <input
+              type="search"
+              id="search-input"
+              class="search-input"
+              placeholder="Cari task..."
+              aria-label="Cari task berdasarkan judul"
+            />
+          </div>
+
+          <!-- Filter Status -->
+          <div class="select-wrapper">
+            <label for="filter-status" class="visually-hidden">Filter status</label>
+            <select id="filter-status" class="filter-select" aria-label="Filter berdasarkan status">
+              <option value="semua">Semua Status</option>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
+          <!-- Filter Prioritas -->
+          <div class="select-wrapper">
+            <label for="filter-priority" class="visually-hidden">Filter prioritas</label>
+            <select id="filter-priority" class="filter-select" aria-label="Filter berdasarkan prioritas">
+              <option value="semua">Semua Prioritas</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+
+          <!-- Filter Kategori -->
+          <div class="select-wrapper">
+            <label for="filter-category" class="visually-hidden">Filter kategori</label>
+            <select id="filter-category" class="filter-select" aria-label="Filter berdasarkan kategori">
+              <option value="semua">Semua Kategori</option>
+              <!-- Opsi kategori diisi dinamis oleh JS -->
+            </select>
+          </div>
+
+          <!-- Sort -->
+          <div class="select-wrapper">
+            <label for="sort-select" class="visually-hidden">Urutkan task</label>
+            <select id="sort-select" class="filter-select" aria-label="Urutkan task">
+              <option value="newest">Terbaru</option>
+              <option value="priority">Prioritas (Tinggi ke Rendah)</option>
+              <option value="due-date">Tanggal Tenggat (Terdekat)</option>
+              <option value="name-az">Nama (A-Z)</option>
+            </select>
+          </div>
+
+          <!-- Reset Filter -->
+          <button type="button" id="btn-reset-filter" class="btn btn--ghost" aria-label="Reset semua filter">
+            Reset Filter
+          </button>
+        </div>
+      </section>
+
+      <!-- Tombol Tambah Task -->
+      <div class="task-actions">
+        <button type="button" id="btn-add-task" class="btn btn--primary" aria-label="Tambah task baru">
+          + Tambah Task
+        </button>
+      </div>
+
+      <!-- Daftar Task (Requirement 1 & 3) -->
+      <section class="task-section" aria-labelledby="task-list-heading">
+        <h2 id="task-list-heading" class="visually-hidden">Daftar Task</h2>
+
+        <!-- Task list dirender oleh JS -->
+        <ul class="task-list" id="task-list" role="list" aria-label="Daftar task">
+          <!-- Task cards akan di-inject di sini oleh UI_Renderer -->
+        </ul>
+
+        <!-- Empty state (ditampilkan oleh JS sesuai kondisi) -->
+        <div class="empty-state" id="empty-state" hidden>
+          <p id="empty-state-message">Belum ada task. Tambahkan task baru untuk memulai.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ===== MODAL: Form Tambah / Edit Task ===== -->
+    <div class="modal-overlay" id="modal-overlay" role="dialog"
+         aria-modal="true" aria-labelledby="modal-title" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-title">Tambah Task</h2>
+          <button type="button" class="modal-close" id="btn-modal-close"
+                  aria-label="Tutup form">&#x2715;</button>
+        </div>
+
+        <form id="task-form" novalidate>
+          <!-- Judul -->
+          <div class="form-group">
+            <label for="input-title" class="form-label">
+              Judul <span aria-hidden="true">*</span>
+            </label>
+            <input
+              type="text"
+              id="input-title"
+              class="form-input"
+              maxlength="100"
+              placeholder="Masukkan judul task"
+              required
+              aria-required="true"
+              aria-describedby="title-error"
+            />
+            <span class="form-error" id="title-error" role="alert" aria-live="assertive"></span>
+          </div>
+
+          <!-- Deskripsi -->
+          <div class="form-group">
+            <label for="input-desc" class="form-label">Deskripsi</label>
+            <textarea
+              id="input-desc"
+              class="form-input form-textarea"
+              maxlength="500"
+              placeholder="Deskripsi singkat (opsional)"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Kategori -->
+          <div class="form-group">
+            <label for="input-category" class="form-label">Kategori</label>
+            <input
+              type="text"
+              id="input-category"
+              class="form-input"
+              placeholder="Contoh: Kerja, Pribadi, Belajar"
+              list="category-suggestions"
+            />
+            <datalist id="category-suggestions">
+              <!-- Diisi dinamis oleh JS dari kategori yang sudah ada -->
+            </datalist>
+          </div>
+
+          <!-- Prioritas -->
+          <div class="form-group">
+            <label for="input-priority" class="form-label">Prioritas</label>
+            <select id="input-priority" class="form-input form-select">
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+
+          <!-- Tanggal Tenggat -->
+          <div class="form-group">
+            <label for="input-due-date" class="form-label">Tanggal Tenggat</label>
+            <input
+              type="date"
+              id="input-due-date"
+              class="form-input"
+              aria-label="Tanggal tenggat (opsional)"
+            />
+          </div>
+
+          <!-- Tombol Aksi Form -->
+          <div class="form-actions">
+            <button type="button" id="btn-cancel-form" class="btn btn--ghost">Batal</button>
+            <button type="submit" id="btn-submit-form" class="btn btn--primary">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== TOAST NOTIFICATION ===== -->
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
